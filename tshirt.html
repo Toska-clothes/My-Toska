@@ -2,60 +2,51 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طراحی تیشرت 3D</title>
-
-    <!-- اینا ابزارهایی هستن که مدل سه‌بعدی رو نشون میدن -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
-
+    <title>تیشرت سه‌بعدی | توسکا</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
         body {
             margin: 0;
-            background: #f0f0f0;
+            background-color: #f0f0f0;
             font-family: sans-serif;
-            text-align: center;
         }
-        #container {
-            width: 100%;
+        #canvas-container {
+            width: 100vw;
             height: 100vh;
         }
     </style>
 </head>
 <body>
-    <h1>مدل سه‌بعدی تیشرت</h1>
-    <div id="container"></div>
+    <div id="canvas-container"></div>
 
     <script>
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById("container").appendChild(renderer.domElement);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // نور اضافه می‌کنیم که مدل روشن باشه
-        const light = new THREE.AmbientLight(0xffffff, 1);
+        const light = new THREE.HemisphereLight(0xffffff, 0x444444);
         scene.add(light);
 
-        // مدل سه‌بعدی رو بارگذاری می‌کنیم
-        const loader = new THREE.GLTFLoader();
-        loader.load('models/tshirt.glb', function(gltf) {
-            scene.add(gltf.scene);
-            gltf.scene.scale.set(0.5, 0.5, 0.5);  // کوچیک‌ترش می‌کنیم
-            gltf.scene.position.set(0, -1, 0);   // جا به جاش می‌کنیم
-            animate();
-        }, undefined, function(error) {
-            console.error("مدل بارگذاری نشد:", error);
-        });
-
         camera.position.z = 3;
+
+        const loader = new THREE.GLTFLoader();
+        loader.load('tshirt.glb', function (gltf) {
+            scene.add(gltf.scene);
+            animate();
+        }, undefined, function (error) {
+            console.error('خطا در بارگذاری مدل:', error);
+            alert('مدل پیدا نشد. مطمئن شو که فایل "tshirt.glb" کنار فایل "tshirt.html" هست.');
+        });
 
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
